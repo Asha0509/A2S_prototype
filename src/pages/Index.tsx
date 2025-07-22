@@ -6,8 +6,6 @@ import { PlacementScreen } from '@/components/PlacementScreen';
 import { ExpertConsultation } from '@/components/ExpertConsultation';
 import { VendorConnect } from '@/components/VendorConnect';
 import { CheckoutScreen } from '@/components/CheckoutScreen';
-import { PageTransition } from '@/components/ui/page-transition';
-import { ProgressIndicator } from '@/components/ui/progress-indicator';
 
 // App State Interface
 interface AppState {
@@ -83,11 +81,6 @@ const Index = () => {
       canProceed: false
     }
   });
-
-  // Screen navigation mapping for progress indicator
-  const screenSteps = ['onboarding', 'room', 'catalog', 'placement', 'expert', 'vendor', 'checkout'];
-  const stepNames = ['Setup', 'Room', 'Catalog', 'Place', 'Expert', 'Vendor', 'Checkout'];
-  const currentStepIndex = screenSteps.indexOf(currentScreen) + 1;
 
   // Business Logic Functions
   const updateAppState = (updates: Partial<AppState>) => {
@@ -211,84 +204,76 @@ const Index = () => {
   }, [appState, currentScreen]);
 
   const renderScreen = () => {
-    const screenContent = (() => {
-      switch (currentScreen) {
-        case 'onboarding':
-          return (
-            <OnboardingFlow 
-              onComplete={() => handleNavigate('room', {
-                budget: 30000,
-                roomType: 'bedroom',
-                stylePreference: 'modern',
-                hasUploadedRoom: true
-              })} 
-            />
-          );
-        case 'room':
-          return (
-            <RoomVisualization 
-              onNavigate={(screen) => handleNavigate(screen, { layout3DGenerated: true })}
-            />
-          );
-        case 'catalog':
-          return (
-            <FurnitureCatalog 
-              onNavigate={(screen) => handleNavigate(screen, {
-                selectedItems: [
-                  { id: 'table', name: 'Oak Study Table', price: 7500, category: 'table', vendor: 'Local Store' },
-                  { id: 'chair', name: 'Ergonomic Chair', price: 4200, category: 'chair', vendor: 'Office Plus' }
-                ],
-                totalCost: 11700
-              })}
-            />
-          );
-        case 'placement':
-          return (
-            <PlacementScreen 
-              onNavigate={(screen) => handleNavigate(screen, { placedItems: 2 })}
-            />
-          );
-        case 'expert':
-          return (
-            <ExpertConsultation 
-              onNavigate={(screen) => handleNavigate(screen, {
-                recommendations: ['Consider adding a bookshelf', 'Lamp position needs adjustment']
-              })}
-            />
-          );
-        case 'vendor':
-          return (
-            <VendorConnect 
-              onNavigate={(screen) => handleNavigate(screen, {
-                quotes: 3,
-                vendors: ['Hyderabad Home Store', 'Office Plus', 'Decor Mart']
-              })}
-            />
-          );
-        case 'checkout':
-          return (
-            <CheckoutScreen 
-              onNavigate={handleNavigate}
-            />
-          );
-        default:
-          return (
-            <OnboardingFlow 
-              onComplete={() => handleNavigate('room', {
-                budget: 30000,
-                roomType: 'bedroom',
-                stylePreference: 'modern'
-              })} 
-            />
-          );
-      }
-    })();
-
-    return (
-      <PageTransition key={currentScreen}>
-        {screenContent}
-      </PageTransition>
-    );
+    switch (currentScreen) {
+      case 'onboarding':
+        return (
+          <OnboardingFlow 
+            onComplete={() => handleNavigate('room', {
+              budget: 30000,
+              roomType: 'bedroom',
+              stylePreference: 'modern',
+              hasUploadedRoom: true
+            })} 
+          />
+        );
+      case 'room':
+        return (
+          <RoomVisualization 
+            onNavigate={(screen) => handleNavigate(screen, { layout3DGenerated: true })}
+          />
+        );
+      case 'catalog':
+        return (
+          <FurnitureCatalog 
+            onNavigate={(screen) => handleNavigate(screen, {
+              selectedItems: [
+                { id: 'table', name: 'Oak Study Table', price: 7500, category: 'table', vendor: 'Local Store' },
+                { id: 'chair', name: 'Ergonomic Chair', price: 4200, category: 'chair', vendor: 'Office Plus' }
+              ],
+              totalCost: 11700
+            })}
+          />
+        );
+      case 'placement':
+        return (
+          <PlacementScreen 
+            onNavigate={(screen) => handleNavigate(screen, { placedItems: 2 })}
+          />
+        );
+      case 'expert':
+        return (
+          <ExpertConsultation 
+            onNavigate={(screen) => handleNavigate(screen, {
+              recommendations: ['Consider adding a bookshelf', 'Lamp position needs adjustment']
+            })}
+          />
+        );
+      case 'vendor':
+        return (
+          <VendorConnect 
+            onNavigate={(screen) => handleNavigate(screen, {
+              quotes: 3,
+              vendors: ['Hyderabad Home Store', 'Office Plus', 'Decor Mart']
+            })}
+          />
+        );
+      case 'checkout':
+        return (
+          <CheckoutScreen 
+            onNavigate={handleNavigate}
+          />
+        );
+      default:
+        return (
+          <OnboardingFlow 
+            onComplete={() => handleNavigate('room', {
+              budget: 30000,
+              roomType: 'bedroom',
+              stylePreference: 'modern'
+            })} 
+          />
+        );
+    }
   };
 
   // Development helper - show current app state in console
@@ -303,20 +288,7 @@ const Index = () => {
   }, [appState, currentScreen]);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Progress Indicator - only show after onboarding */}
-      {currentScreen !== 'onboarding' && (
-        <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-          <div className="container mx-auto px-4 py-4">
-            <ProgressIndicator
-              currentStep={currentStepIndex}
-              totalSteps={screenSteps.length}
-              steps={stepNames}
-            />
-          </div>
-        </div>
-      )}
-      
+    <div className="min-h-screen">
       {renderScreen()}
     </div>
   );
