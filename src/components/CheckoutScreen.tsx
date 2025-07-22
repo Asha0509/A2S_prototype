@@ -82,7 +82,8 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ onNavigate }) =>
     // Simulate payment processing
     setTimeout(() => {
       setIsProcessing(false);
-      // Navigate to success screen or show success message
+      // Navigate to success screen
+      window.location.href = '/order-success';
     }, 3000);
   };
 
