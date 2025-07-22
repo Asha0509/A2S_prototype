@@ -1,12 +1,43 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import React, { useState } from 'react';
+import { OnboardingFlow } from '@/components/OnboardingFlow';
+import { RoomVisualization } from '@/components/RoomVisualization';
+import { FurnitureCatalog } from '@/components/FurnitureCatalog';
+import { PlacementScreen } from '@/components/PlacementScreen';
+import { ExpertConsultation } from '@/components/ExpertConsultation';
+import { VendorConnect } from '@/components/VendorConnect';
+import { CheckoutScreen } from '@/components/CheckoutScreen';
 
 const Index = () => {
+  const [currentScreen, setCurrentScreen] = useState<string>('onboarding');
+
+  const handleNavigate = (screen: string) => {
+    setCurrentScreen(screen);
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'onboarding':
+        return <OnboardingFlow onComplete={() => setCurrentScreen('room')} />;
+      case 'room':
+        return <RoomVisualization onNavigate={handleNavigate} />;
+      case 'catalog':
+        return <FurnitureCatalog onNavigate={handleNavigate} />;
+      case 'placement':
+        return <PlacementScreen onNavigate={handleNavigate} />;
+      case 'expert':
+        return <ExpertConsultation onNavigate={handleNavigate} />;
+      case 'vendor':
+        return <VendorConnect onNavigate={handleNavigate} />;
+      case 'checkout':
+        return <CheckoutScreen onNavigate={handleNavigate} />;
+      default:
+        return <OnboardingFlow onComplete={() => setCurrentScreen('room')} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      {renderScreen()}
     </div>
   );
 };
