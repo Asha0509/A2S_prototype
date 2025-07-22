@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { SwipeNavigation } from '@/components/ui/swipe-navigation';
+import { AnimatedCard } from '@/components/ui/animated-card';
+import { demoFurniture } from '@/data/demo-furniture';
 import { 
   Search, 
   Filter, 
@@ -11,7 +14,9 @@ import {
   MapPin, 
   Heart,
   ArrowLeft,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Zap,
+  Truck
 } from 'lucide-react';
 import studyTable from '@/assets/study-table.jpg';
 
@@ -33,68 +38,12 @@ export const FurnitureCatalog: React.FC<FurnitureCatalogProps> = ({ onNavigate }
     { id: 'decor', name: 'Decor', count: 22 }
   ];
 
-  const furnitureItems = [
-    {
-      id: 1,
-      name: "Minimalist Oak Study Table",
-      price: 7500,
-      originalPrice: 9000,
-      vendor: "Hyderabad Home Store",
-      rating: 4.6,
-      reviews: 124,
-      dimensions: "120x60x75 cm",
-      delivery: "3-5 days",
-      isLocalVendor: true,
-      isBestFit: true,
-      image: studyTable,
-      inBudget: true
-    },
-    {
-      id: 2,
-      name: "Ergonomic Office Chair",
-      price: 4200,
-      originalPrice: 5500,
-      vendor: "Office Plus",
-      rating: 4.4,
-      reviews: 89,
-      dimensions: "65x65x110 cm",
-      delivery: "2-4 days",
-      isLocalVendor: true,
-      isBestFit: false,
-      image: studyTable, // Placeholder
-      inBudget: true
-    },
-    {
-      id: 3,
-      name: "Modern Floor Lamp",
-      price: 2800,
-      originalPrice: 3200,
-      vendor: "Light House",
-      rating: 4.7,
-      reviews: 156,
-      dimensions: "30x30x150 cm",
-      delivery: "1-3 days",
-      isLocalVendor: false,
-      isBestFit: true,
-      image: studyTable, // Placeholder
-      inBudget: true
-    },
-    {
-      id: 4,
-      name: "Wooden Bookshelf",
-      price: 8900,
-      originalPrice: 11000,
-      vendor: "Wood Craft",
-      rating: 4.5,
-      reviews: 67,
-      dimensions: "80x30x180 cm",
-      delivery: "5-7 days",
-      isLocalVendor: true,
-      isBestFit: false,
-      image: studyTable, // Placeholder
-      inBudget: false
-    }
-  ];
+  // Use enhanced demo data
+  const furnitureItems = demoFurniture.map(item => ({
+    ...item,
+    image: studyTable, // Using placeholder for all items
+    inBudget: item.price <= 10000 // Simple budget check
+  }));
 
   const filteredItems = furnitureItems.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -202,14 +151,27 @@ export const FurnitureCatalog: React.FC<FurnitureCatalogProps> = ({ onNavigate }
 
           <div className="space-y-4">
             {filteredItems.map((item) => (
-              <Card key={item.id} className="shadow-soft overflow-hidden">
+              <AnimatedCard key={item.id} className="shadow-soft overflow-hidden">
                 <div className="flex">
                   <div className="relative">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-24 h-24 object-cover"
-                    />
+                    <SwipeNavigation
+                      currentIndex={0}
+                      onIndexChange={() => {}}
+                      showDots={false}
+                      className="w-24 h-24"
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-24 h-24 object-cover"
+                      />
+                      <img
+                        src={item.image}
+                        alt={`${item.name} alt view`}
+                        className="w-24 h-24 object-cover"
+                      />
+                    </SwipeNavigation>
+                    
                     <Button
                       size="icon"
                       variant="ghost"
@@ -217,12 +179,23 @@ export const FurnitureCatalog: React.FC<FurnitureCatalogProps> = ({ onNavigate }
                     >
                       <Heart className="w-3 h-3" />
                     </Button>
+                    
                     {item.isBestFit && (
                       <Badge 
                         variant="default" 
                         className="absolute bottom-1 left-1 text-xs bg-accent-teal text-white"
                       >
+                        <Zap className="w-2 h-2 mr-1" />
                         Best Fit
+                      </Badge>
+                    )}
+                    
+                    {item.discount && (
+                      <Badge 
+                        variant="destructive" 
+                        className="absolute top-1 left-1 text-xs"
+                      >
+                        {item.discount}% OFF
                       </Badge>
                     )}
                   </div>
@@ -242,7 +215,13 @@ export const FurnitureCatalog: React.FC<FurnitureCatalogProps> = ({ onNavigate }
                           </div>
                           {item.isLocalVendor && (
                             <Badge variant="outline" className="text-xs bg-accent/10 text-accent border-accent">
+                              <MapPin className="w-2 h-2 mr-1" />
                               Local
+                            </Badge>
+                          )}
+                          {!item.inStock && (
+                            <Badge variant="secondary" className="text-xs">
+                              Pre-order
                             </Badge>
                           )}
                         </div>
@@ -254,7 +233,7 @@ export const FurnitureCatalog: React.FC<FurnitureCatalogProps> = ({ onNavigate }
                         <span className="font-bold text-primary">
                           ₹{item.price.toLocaleString('en-IN')}
                         </span>
-                        {item.originalPrice > item.price && (
+                        {item.originalPrice && item.originalPrice > item.price && (
                           <span className="text-xs text-muted-foreground line-through">
                             ₹{item.originalPrice.toLocaleString('en-IN')}
                           </span>
@@ -266,9 +245,33 @@ export const FurnitureCatalog: React.FC<FurnitureCatalogProps> = ({ onNavigate }
                         )}
                       </div>
                       
-                      <div className="text-xs text-muted-foreground">
-                        {item.vendor} • {item.delivery}
+                      <div className="text-xs text-muted-foreground flex items-center space-x-2">
+                        <span>{item.vendor}</span>
+                        <span>•</span>
+                        <div className="flex items-center space-x-1">
+                          <Truck className="w-3 h-3" />
+                          <span>{item.deliveryTime}</span>
+                        </div>
                       </div>
+                      
+                      {/* Color options */}
+                      {item.colors && item.colors.length > 0 && (
+                        <div className="flex items-center space-x-1">
+                          <span className="text-xs text-muted-foreground">Colors:</span>
+                          <div className="flex space-x-1">
+                            {item.colors.slice(0, 3).map((color, index) => (
+                              <div
+                                key={index}
+                                className="w-3 h-3 rounded-full border border-border bg-muted"
+                                title={color}
+                              />
+                            ))}
+                            {item.colors.length > 3 && (
+                              <span className="text-xs text-muted-foreground">+{item.colors.length - 3}</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                       
                       <Button 
                         size="sm" 
@@ -282,7 +285,7 @@ export const FurnitureCatalog: React.FC<FurnitureCatalogProps> = ({ onNavigate }
                     </div>
                   </CardContent>
                 </div>
-              </Card>
+              </AnimatedCard>
             ))}
           </div>
         </div>

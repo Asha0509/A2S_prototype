@@ -17,6 +17,8 @@ import {
   Phone
 } from 'lucide-react';
 import expertRiya from '@/assets/expert-riya.jpg';
+import expertSarah from '@/assets/expert-sarah.jpg';
+import expertConsultant from '@/assets/expert-consultant.jpg';
 import room3d from '@/assets/room-3d.jpg';
 
 interface ExpertConsultationProps {
@@ -44,16 +46,29 @@ export const ExpertConsultation: React.FC<ExpertConsultationProps> = ({ onNaviga
     },
     {
       id: 2,
-      name: "Arjun Reddy",
+      name: "Sarah Johnson",
       title: "Space Planning Expert",
       rating: 4.7,
       reviews: 134,
-      languages: ["English", "Telugu", "Tamil"],
+      languages: ["English", "Hindi"],
       specialties: ["Small Spaces", "Budget-friendly", "Traditional"],
       experience: "6+ years",
       price: 400,
       availability: "Available in 30 min",
-      image: expertRiya // Placeholder
+      image: expertSarah
+    },
+    {
+      id: 3,
+      name: "Alex Chen",
+      title: "Luxury Design Consultant",
+      rating: 4.9,
+      reviews: 89,
+      languages: ["English"],
+      specialties: ["Luxury", "Corporate", "Modern"],
+      experience: "10+ years",
+      price: 800,
+      availability: "Book for tomorrow",
+      image: expertConsultant
     }
   ];
 
@@ -61,11 +76,38 @@ export const ExpertConsultation: React.FC<ExpertConsultationProps> = ({ onNaviga
     "Now", "2:00 PM", "3:30 PM", "5:00 PM", "Tomorrow 10 AM", "Tomorrow 2 PM"
   ];
 
-  const chatMessages = [
+  const [chatMessages, setChatMessages] = useState([
     { sender: 'expert', message: 'Hello! I can see your room layout. The oak table placement looks great!', time: '2:45 PM' },
     { sender: 'user', message: 'Thanks! I\'m concerned about the walking space though.', time: '2:46 PM' },
-    { sender: 'expert', message: 'Good point. Let me suggest moving the table 30cm to the right. This will improve the flow.', time: '2:47 PM' }
+    { sender: 'expert', message: 'Good point. Let me suggest moving the table 30cm to the right. This will improve the flow.', time: '2:47 PM' },
+    { sender: 'expert', message: 'I can also help you optimize the budget. Would you like to see some alternatives?', time: '2:48 PM' }
+  ]);
+
+  const simulatedResponses = [
+    "That's a great question! For your space, I'd recommend...",
+    "I can see the issue. Let me suggest a quick fix...",
+    "Based on your budget, here are some alternatives...",
+    "The lighting could be improved by placing a lamp here...",
+    "This color combination would work better with your style..."
   ];
+
+  const sendMessage = () => {
+    if (!message.trim()) return;
+    
+    const userMessage = { sender: 'user', message, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+    setChatMessages(prev => [...prev, userMessage]);
+    setMessage('');
+
+    // Simulate expert response
+    setTimeout(() => {
+      const expertResponse = {
+        sender: 'expert',
+        message: simulatedResponses[Math.floor(Math.random() * simulatedResponses.length)],
+        time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      };
+      setChatMessages(prev => [...prev, expertResponse]);
+    }, 1500);
+  };
 
   if (isInCall) {
     return (
@@ -147,9 +189,10 @@ export const ExpertConsultation: React.FC<ExpertConsultationProps> = ({ onNaviga
                 placeholder="Type a message..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                 className="bg-white/20 border-white/30 text-white placeholder:text-gray-300 text-sm"
               />
-              <Button size="sm" variant="teal">
+              <Button size="sm" variant="teal" onClick={sendMessage}>
                 <Send className="w-4 h-4" />
               </Button>
             </div>
