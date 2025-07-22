@@ -3,9 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { RoomHotspots } from '@/components/ui/room-hotspots';
-import { BudgetCalculator } from '@/components/ui/budget-calculator';
-import { SwipeNavigation } from '@/components/ui/swipe-navigation';
 import { 
   Plus, 
   RotateCcw, 
@@ -14,12 +11,9 @@ import {
   DollarSign,
   Eye,
   Grid3x3,
-  Share,
-  Settings,
-  TrendingUp
+  Share
 } from 'lucide-react';
 import room3d from '@/assets/room-3d.jpg';
-import livingRoom from '@/assets/living-room.jpg';
 
 interface RoomVisualizationProps {
   onNavigate: (screen: string) => void;
@@ -28,46 +22,11 @@ interface RoomVisualizationProps {
 export const RoomVisualization: React.FC<RoomVisualizationProps> = ({ onNavigate }) => {
   const [budget, setBudget] = useState([30000]);
   const [isFloorPlan, setIsFloorPlan] = useState(false);
-  const [currentRoomIndex, setCurrentRoomIndex] = useState(0);
-  const [showBudgetBreakdown, setShowBudgetBreakdown] = useState(false);
   const [roomData] = useState({
     dimensions: "10x12 ft",
     type: "Bedroom",
     style: "Modern Minimalist"
   });
-
-  const roomViews = [
-    { name: '3D View', image: room3d, type: '3d' },
-    { name: 'Alternative View', image: livingRoom, type: '3d' },
-    { name: 'Floor Plan', image: room3d, type: 'floorplan' }
-  ];
-
-  const budgetData = [
-    {
-      category: 'Furniture',
-      allocated: 20000,
-      spent: 14500,
-      items: [
-        { name: 'Oak Study Table', price: 7500 },
-        { name: 'Ergonomic Chair', price: 4200 },
-        { name: 'Floor Lamp', price: 2800 }
-      ]
-    },
-    {
-      category: 'Storage',
-      allocated: 8000,
-      spent: 3800,
-      items: [
-        { name: 'Modern Bookshelf', price: 3800 }
-      ]
-    },
-    {
-      category: 'Decor',
-      allocated: 2000,
-      spent: 0,
-      items: []
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-surface">
@@ -110,65 +69,67 @@ export const RoomVisualization: React.FC<RoomVisualizationProps> = ({ onNavigate
         </div>
       </div>
 
-      {/* Interactive Room Views */}
+      {/* 3D Room View */}
       <div className="p-4">
         <div className="max-w-md mx-auto">
           <Card className="shadow-medium overflow-hidden">
-            <SwipeNavigation
-              currentIndex={currentRoomIndex}
-              onIndexChange={setCurrentRoomIndex}
-              showDots={true}
-              showArrows={false}
-            >
-              {roomViews.map((view, index) => (
-                <div key={index} className="relative">
-                  <RoomHotspots
-                    imageUrl={view.image}
-                    hotspots={[]}
-                    onHotspotClick={(hotspot) => {
-                      console.log('Hotspot clicked:', hotspot);
-                    }}
-                    onAddFurniture={(x, y) => {
-                      console.log('Add furniture at:', x, y);
-                      onNavigate('catalog');
-                    }}
-                  />
-                  
-                  {/* Overlay Controls */}
-                  <div className="absolute top-4 right-4 space-y-2">
-                    <Button 
-                      size="icon" 
-                      variant="secondary"
-                      className="bg-card/90 backdrop-blur-sm"
-                    >
-                      <Maximize2 className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      size="icon" 
-                      variant="secondary"
-                      className="bg-card/90 backdrop-blur-sm"
-                    >
-                      <Share className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      size="icon" 
-                      variant="secondary"
-                      className="bg-card/90 backdrop-blur-sm"
-                      onClick={() => setShowBudgetBreakdown(!showBudgetBreakdown)}
-                    >
-                      <TrendingUp className="w-4 h-4" />
-                    </Button>
-                  </div>
+            <div className="relative">
+              <img 
+                src={room3d} 
+                alt="3D Room Visualization" 
+                className="w-full h-64 object-cover"
+              />
+              
+              {/* Overlay Controls */}
+              <div className="absolute top-4 right-4 space-y-2">
+                <Button 
+                  size="icon" 
+                  variant="secondary"
+                  className="bg-card/90 backdrop-blur-sm"
+                  onClick={() => setIsFloorPlan(!isFloorPlan)}
+                >
+                  {isFloorPlan ? <Eye className="w-4 h-4" /> : <Map className="w-4 h-4" />}
+                </Button>
+                <Button 
+                  size="icon" 
+                  variant="secondary"
+                  className="bg-card/90 backdrop-blur-sm"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </Button>
+                <Button 
+                  size="icon" 
+                  variant="secondary"
+                  className="bg-card/90 backdrop-blur-sm"
+                >
+                  <Share className="w-4 h-4" />
+                </Button>
+              </div>
 
-                  {/* View Label */}
-                  <div className="absolute bottom-4 left-4">
-                    <Badge variant="outline" className="bg-card/90 backdrop-blur-sm">
-                      {view.name}
-                    </Badge>
-                  </div>
+              {/* View Toggle */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex items-center justify-center space-x-2">
+                  <Button 
+                    size="sm" 
+                    variant={!isFloorPlan ? "default" : "secondary"}
+                    onClick={() => setIsFloorPlan(false)}
+                    className="bg-card/90 backdrop-blur-sm"
+                  >
+                    <Eye className="w-4 h-4 mr-1" />
+                    3D View
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant={isFloorPlan ? "default" : "secondary"}
+                    onClick={() => setIsFloorPlan(true)}
+                    className="bg-card/90 backdrop-blur-sm"
+                  >
+                    <Grid3x3 className="w-4 h-4 mr-1" />
+                    Floor Plan
+                  </Button>
                 </div>
-              ))}
-            </SwipeNavigation>
+              </div>
+            </div>
           </Card>
 
           {/* Room Stats */}
@@ -225,49 +186,27 @@ export const RoomVisualization: React.FC<RoomVisualizationProps> = ({ onNavigate
             </div>
           </div>
 
-          {/* Budget Breakdown or Recent Additions */}
-          {showBudgetBreakdown ? (
-            <BudgetCalculator
-              totalBudget={budget[0]}
-              budgetItems={budgetData}
-              className="mt-6"
-              onOptimize={() => {
-                // Handle budget optimization
-                console.log('Optimize budget');
-              }}
-            />
-          ) : (
-            <Card className="shadow-soft mt-6">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Recently Added</CardTitle>
-                  <Button 
-                    size="sm" 
-                    variant="ghost"
-                    onClick={() => setShowBudgetBreakdown(true)}
-                  >
-                    <Settings className="w-4 h-4 mr-1" />
-                    Budget
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  { name: "Oak Study Table", price: "₹7,500", vendor: "Hyderabad Home Store" },
-                  { name: "Ergonomic Chair", price: "₹4,200", vendor: "Office Plus" },
-                  { name: "Floor Lamp", price: "₹2,800", vendor: "Light House" }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                    <div>
-                      <div className="font-medium text-sm">{item.name}</div>
-                      <div className="text-xs text-muted-foreground">{item.vendor}</div>
-                    </div>
-                    <div className="text-sm font-medium text-primary">{item.price}</div>
+          {/* Recent Additions */}
+          <Card className="shadow-soft mt-6">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Recently Added</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                { name: "Oak Study Table", price: "₹7,500", vendor: "Hyderabad Home Store" },
+                { name: "Ergonomic Chair", price: "₹4,200", vendor: "Office Plus" },
+                { name: "Floor Lamp", price: "₹2,800", vendor: "Light House" }
+              ].map((item, index) => (
+                <div key={index} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                  <div>
+                    <div className="font-medium text-sm">{item.name}</div>
+                    <div className="text-xs text-muted-foreground">{item.vendor}</div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+                  <div className="text-sm font-medium text-primary">{item.price}</div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
