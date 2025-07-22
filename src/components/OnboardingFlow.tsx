@@ -32,6 +32,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) =>
   ];
 
   const handleVideoUpload = () => {
+    if (uploading) return; // Prevent multiple clicks
     setUploading(true);
     // Simulate upload progress
     setTimeout(() => {
